@@ -1,0 +1,149 @@
+<style type="text/css">
+	.nav{
+		height: 60px;
+		width: 100%;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	.nav_rule{
+		position: relative;
+		height: 30px;
+		width: 250px;
+		line-height: 30px;
+		border-radius: 30px;
+		box-shadow: 0 0 6px rgba(89,120,244,0.6) inset;
+		border:1px solid #6789ff;
+		top: 15px;
+		margin-left: 100px;
+		display:inline-block;
+		cursor: pointer;
+	}
+	.nav_rule div{
+		flex:1;
+		text-align: center;
+		line-height: 30px;
+		display: inline-block;
+		width: 31.3%;
+	}
+	.search{
+		height:32px;
+		width:200px;
+		background: rgb(234,234,234);
+		border-radius: 4px;
+		margin-left: 50px;
+		display: inline-block;
+		margin-top: 8px;
+    	vertical-align: text-top;
+	}
+	.search_icon{
+        background-image:url('../source/search.png');
+        display: inline-block;
+        background-repeat: no-repeat;
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+        cursor: pointer;
+	}
+	.search_input{
+		border:none;
+		height: 26px;
+		margin-top: 2px;
+		line-height: 26px;
+		font-size: 14px;
+		padding-left: 10px;
+		width:150px;
+		background: rgb(234,234,234);
+		outline:none;
+	}
+	.driver_title{
+		height: 60px;
+		font-size: 20px;
+		color:rgb(137,161,178);
+		line-height: 60px;
+		width: 80%;
+		margin-left: 10%;
+		box-shadow: 0 0 10px rgba(0,0,0,0.1);
+		margin-top: 40px;
+		text-align: center;
+		display: flex
+	}
+	.driver_title div{
+		display: inline-block;
+		flex:1;
+	}
+	.kx{
+		height: 16px;
+		width: 16px;
+		border-radius: 16px;
+		background: #2add77;
+		vertical-align: sub;
+	}
+	.ys{
+		height: 16px;
+		width: 16px;
+		border-radius: 16px;
+		background: #ff5b5c;
+		vertical-align: sub;
+	}
+	.status{
+		position: relative;
+		display: inline-block;
+		height: 30px;
+		margin-top: 15px;
+		vertical-align: bottom;
+		line-height: 30px;
+	}
+	.status div{
+		display: inline-block;
+	}
+</style>
+<div style="margin: 0;padding: 0;position: relative;">
+	<div class="nav">
+		<div class="status">
+			<div style="margin-left: 10px">
+				<div class="kx"></div>
+				<div style="margin-left: 4px;">正常</div>
+			</div>
+			<div style="margin-left: 10px">
+				<div class="ys"></div>
+				<div style="margin-left: 4px;">停用</div>
+			</div>
+		</div>
+		<div class="nav_rule">
+			<div class="all_driver">全部</div>
+			<div class="kx_driver">运输中</div>
+			<div class="ys_driver">停用</div>
+		</div>
+		<div class="search">
+			<input type="text" placeholder="司机搜索" name="" class="search_input"/>
+			<div class="search_icon"></div>
+		</div>
+		<div style="overflow: hidden;[padding-left: 40px;">
+			<div class="driver_title">
+				<div >姓名</div>
+				<div style="flex:2">身份证</div>
+				<div >状态</div>
+				<div >查看详情</div>
+			</div>
+			<div id="car" style="margin-top: 20px;height: 400px;overflow-y: scroll;"></div>
+		</div>
+		<div id = 'test3' style="display: inline-block;position: relative;left:50%;margin-top: 20px;transform: translate(-50%,0);"></div>
+	</div>
+</div>
+<script type="text/javascript">
+    let share = require('electron').remote.getGlobal('sharedObject');
+    var util = require('../renderer.js');
+	$('.nav_rule div').on('click',function(){
+		$('.nav_rule div').css('color','#535353');
+		$(this).css('color','#6789ff');
+	});
+	$('.search_icon').on('click',function(){
+        $('#test3').css('display','none'); 
+        let url = 'truck_info_by_licence';
+        let temp = '#cartmpl';
+        let view = '#car';
+        let page = 'test3';
+        let Fun = 'POSTS';
+		let text = $('.search_input').val();
+        that.show_info(url,temp,view,page,Fun,text);
+    });
+</script>

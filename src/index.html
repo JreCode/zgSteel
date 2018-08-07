@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>抢单管理后台</title>
+    <link rel="stylesheet" href="../utils/layui/css/layui.css">
+    <style type="text/css">
+        body{
+            padding: 0;
+            margin:0;
+            font-family: "Microsoft YaHei Arial",Aria,STHeiti,"PingFang SC";
+            /*-webkit-app-region: drag;*/
+            overflow: hidden;
+        }
+        .top{
+            height:50px;
+            width:100%;
+            margin: 0;
+            position: relative;
+            top:0;
+            background: rgb(244,244,244);
+            border-bottom: 0.5px solid #f8f8f8;
+            /*-webkit-app-region: no-drag;*/
+        }
+        .max{
+            height:14px;
+            width:14px;
+            border-radius: 14px;
+            background-color: rgb(42,203,52);
+            display: inline-block;
+            margin-left: 10px;
+            background-position: -20px -479px;
+            background-image:url('../source/sprite.png');
+            /*-webkit-app-region: no-drag;*/
+        }
+        .min{
+            height: 14px;
+            width:14px;
+            border-radius: 14px;
+            background-color: rgb(253,176,36);
+            display: inline-block;
+            margin-left: 10px;
+            background-position: -31px -479px;
+            background-image:url('../source/sprite.png');
+            /*-webkit-app-region: no-drag;*/
+        }
+        .close{
+            height: 14px;
+            width: 14px;
+            border-radius: 14px;
+            background-color: rgb(252,75,74);
+            display: inline-block;
+            margin-left: 10px;
+            background-position: -110px -467px;
+            background-image:url('../source/sprite.png');
+            /*-webkit-app-region: no-drag;*/
+        }
+        .title{
+            font-size: 16px;
+            font-weight: bold;
+            height:50px;
+            line-height: 50px;
+            margin-left:10px;
+            display: inline-block;
+            color: rgb(67,145,247);
+            /*-webkit-app-region: drag;*/
+        }
+        .control{
+            position: relative;
+            display: inline-block;
+            float: right;
+            right:15px;
+            margin-top:16px;
+            /*-webkit-app-region: no-drag;*/
+        }
+        .lnr{
+            display: inline-block;
+            background-repeat: no-repeat;
+            background-size: 223px 596px;
+            /*-webkit-app-region: no-drag;*/
+        }
+        .menu{
+            width:200px;
+            height: 10000px;
+            box-shadow: 0.5px 2px 10px rgba(0,0,0,0.1);
+            display: inline-block;
+            background: #fff;
+            position: relative;
+            color:#535353;
+            vertical-align:top;
+        }
+        .menu div{
+            height:50px;
+            line-height: 50px;
+            font-size: 16px;
+            width: 140px;
+            margin-left: 40px;
+            padding-left: 20px;
+            cursor: pointer;
+        }
+        .active{
+            background: #5689ff;
+            color:#fff;
+        }
+        .item{
+            display: inline-block;
+            width: calc(100% - 210px);
+            height: 10000px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+        <div class="title">中钢抢单后台管理</div>
+        <div class="control" style="font-size: 10px;line-height:14px">
+            <div class="min lnr" id="min"></div>
+            <div class="max lnr" id="max"></div>
+            <div class="close lnr" id="close"></div> 
+        </div>
+    </div>
+    <div class="content">
+        <div class="menu">
+            <div style="margin-top: 10px" class="owner active">车主管理</div>
+            <div class="driver">司机管理</div>
+            <div class="car">车辆管理</div>
+            <div class="order">订单管理</div>
+            <div class="release">发布公告</div>
+            <div class="history">历史操作</div>
+            <div class="lost_driver">违规车辆</div>
+        </div>
+        <div class="item">
+
+        </div>
+    </div>
+    <div style="position: absolute;bottom:14px;margin-left: 80px;color:#535353" class="version">
+        <i class="layui-icon layui-icon-loading-1 layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+        正在检查更新
+    </div>
+    <div></div>
+    <!-- <script type="text/javascript" src="../utils/doT.js"></script> -->
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="../utils/handlebar.js"></script>
+    <script src="../utils/layui/layui.js"></script>
+    <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
+    <script id="drivertmpl" type="text/x-handlebars-template">
+      {{#each data}}
+        <div style="height:40px;font-size:14px;color:#535353;text-align:center;line-height:40px;display:flex;border-bottom:1px solid #d0d0d0;width:80%;margin-left:10%" class="driver_item">
+            <div style="flex:1">{{driver_name}}</div>
+            <div style="flex:2">{{driver_idcard}}</div>
+            {{#if_even driver_service}}
+                <div style="flex:1;position:relative">
+                    <div style="height: 16px;width: 16px;position:absolute;top:50%;left:50%;margin-left:-8px;margin-top:-8px;border-radius: 16px;background: #ff5b5c;"></div>
+                </div>
+            {{else}}
+                <div style="flex:1;position:relative">
+                    <div style="height: 16px;width: 16px;position:absolute;top:50%;left:50%;margin-left:-8px;margin-top:-8px;border-radius: 16px;background: #2add77;"></div>
+                </div>
+            {{/if_even}}
+            <div style="flex:1"  style="cursor:pointer;color:#f04560" data-id="{{driver_id}}" class="del_owner" onclick="del_driver(this)">
+                <img src="../source/删除.png"/ style="width:16px;height:16px;cursor:pointer">
+            </div>
+        </div>
+        {{/each}}
+    </script>
+    <script id="ownertmpl" type="text/x-handlebars-template">
+      {{#each data}}
+        <div style="height:40px;font-size:14px;color:#535353;text-align:center;line-height:40px;display:flex;border-bottom:1px solid #d0d0d0;width:80%;margin-left:10%" class="owner_item">
+            <div style="flex:1">{{owner_name}}</div>
+            <div style="flex:2">{{owner_idcard}}</div>
+            <div style="flex:1">{{sign_type owner_department}}</div>
+            <div style="flex:1"  style="cursor:pointer;color:#f04560" data-id="{{owner_id}}" class="del_owner" onclick="del_owner(this)">
+                <img src="../source/删除.png"/ style="width:16px;height:16px;cursor:pointer">
+            </div>
+        </div>
+        {{/each}}
+    </script>
+    <script id="cartmpl" type="text/x-handlebars-template">
+      {{#each data}}
+        <div style="height:40px;font-size:14px;color:#535353;text-align:center;line-height:40px;display:flex;border-bottom:1px solid #d0d0d0;width:80%;margin-left:10%" class="car_item">
+            <div style="flex:1">{{truck_licence}}</div>
+            <div style="flex:2">{{owner_name}}</div>
+            {{#if_even truck_service}}
+                <div style="flex:1;position:relative">
+                    <div style="height: 16px;width: 16px;position:absolute;top:50%;left:50%;margin-left:-8px;margin-top:-8px;border-radius: 16px;background: #ff5b5c;cursor:pointer" onclick="cTruck_service(this)" data-id="{{truck_id}}"></div>
+                </div>
+            {{else}}
+                <div style="flex:1;position:relative">
+                    <div style="height: 16px;width: 16px;position:absolute;top:50%;left:50%;margin-left:-8px;margin-top:-8px;border-radius: 16px;background: #2add77;cursor:pointer" onclick="cTruck_service(this)" data-id="{{truck_id}}"></div>
+                </div>
+            {{/if_even}}
+            {{#if_prohibit truck_prohibit}}
+                <div style="flex:1;position:relative;cursor:pointer" data-id="{{truck_id}}" class="change_prohibit" onclick="change_prohibit(this)">
+                    正常
+                </div>
+            {{else}}
+                <div style="flex:1;position:relative;cursor:pointer" data-id="{{truck_id}}" class="change_prohibit" onclick="change_prohibit(this)">
+                    {{data_format truck_prohibit}}
+                </div>
+            {{/if_prohibit}}
+        </div>
+        {{/each}}
+    </script>
+    <script id="ordertmpl" type="text/x-handlebars-template">
+      {{#each data}}
+        <div class="order_item" style="width:30%;margin-left:3%;box-shadow:0 0 6px rgba(0,0,0,0.1);border-radius:6px;height:100px;margin-top:20px;display:inline-block;background:linear-gradient(to right bottom, #50a890, #5dc890);color:#fff;position:relative;cursor">
+            <div style="font-size:20px;margin-top:20px;margin-left:20px;">{{order_address}}</div>
+            <div style="margin-left:20px;margin-top:30px;">{{order_publish_time}}</div>
+            <div style="font-size:30px;right:20px;top:30px;position:absolute">¥{{order_cost}}</div>
+        </div>
+        {{/each}}
+    </script>
+    <script id="losttmpl" type="text/x-handlebars-template">
+        {{#each data}}
+            <div style="line-height:32px;color:#666;font-size:15px">车主[{{owner_name}}]的「{{truck_licence}}」车辆,抢了订单『{{}}』,未分配司机</div>
+        {{/each}}
+    </script>
+    <script>
+        layui.use('element', function(){
+            var element = layui.element;
+        });
+        const remote = require('electron').remote; 
+        let that = this;
+        var layer = layui.layer;
+        // let doT = require('../utils/doT.js');
+        let share = require('electron').remote.getGlobal('sharedObject');
+        var util = require('../renderer.js');
+        var ipc = require('electron').ipcRenderer;
+        var driver;
+        Handlebars.registerHelper('if_even', function(value, options) {
+            if(Number(value)) {
+                return options.fn(this);
+            } else {
+                return options.inverse(this);
+            }
+        });
+        Handlebars.registerHelper('sign_type',function(value){
+            var signVal = {
+                0:'注册车辆',
+                1:'白福昌信息部',
+                2:'薛林生信息部',
+                3:'赵练生信息部'
+            };
+            return signVal[value];
+        });
+        Handlebars.registerHelper('if_prohibit',function(value,options){
+            let date = new Date(value);
+            let date1 = new Date();
+            if(date1 > date){
+                return options.fn(this);
+            }else if(date1 < date){
+                return options.inverse(this);
+            }
+        });
+        Handlebars.registerHelper('data_format',function(value){
+            var reg = /([^\s]+)\s.*/;
+            var str = value;
+            str = str.replace(reg, "$1");
+            return str;
+        });
+        window.onload = function(){
+            $('.item').load('./owner.html');
+            let url = 'owners_datas';
+            let temp = '#ownertmpl';
+            let view = '#owner';
+            let page = 'test2';
+            let Fun = 'GET';
+            that.show_info(url,temp,view,page,Fun);
+            let version =  remote.app.getVersion();
+            $('.version').html('当前版本为['+version+']');
+        }
+        $(".control").hover(function(){
+            $(".control").children("div").css("background-image","url('../source/sprite.png')");
+        },function(){
+            $(".control").children("div").css("background-image","none");
+        });
+        $('.del_owner').on('click',function(){
+            let id = $(this).data('id');
+        })
+        $('#min').on('click',function(){
+            ipc.send('main-min');
+        });
+        $('#max').on('click',function(){
+            ipc.send('main-max');
+        });
+        $('#close').on('click',function(){
+            ipc.send('window-close');
+        });
+        $('.menu div').on('click',function(){
+            $('.menu div').removeClass('active');
+            let name = $(this).attr('class');
+            $(this).addClass('active');
+            $('.item').load('./'+name+'.html');
+        });
+        function show_info(){
+            let token = share.token;
+            let url = arguments[0];
+            let temp = arguments[1];
+            let view = arguments[2];
+            let page = arguments[3];
+            let Fun = arguments[4];
+            function success(e){
+                let data = {};
+                let array = JSON.parse(e);
+                console.log(array);
+                data.data = array.slice(0,11);
+                var myTemplate = Handlebars.compile($(temp).html());
+                $(view).html(myTemplate(data));
+                if(page != null){
+                    that.check_page(page,array,temp,view,data);
+                }
+            }
+            if(Fun == 'GET'){
+                util.GET(url,success,token);
+            }else if(Fun == 'POSTS'){
+                let text = arguments[5];
+                util.POSTS(url,text,success,token);
+            }
+        }
+        function check_page(page,array,temp,view,data){
+            layui.use('laypage', function(){
+                var laypage = layui.laypage;
+                laypage.render({
+                    elem: page, //注意，这里的 test1 是 ID，不用加 # 号
+                    count: array.length, //数据总数，从服务端得到
+                    limit:11,
+                    jump: function(obj, first){
+                        if(!first){
+                            let begin = (obj.curr -1)*10;
+                            let end = (obj.curr*10)+1;
+                            data.data = array.slice(begin,end);
+                            var myTemplate = Handlebars.compile($(temp).html());
+                            $(view).html(myTemplate(data));
+                        }
+                    }
+                });
+            }); 
+        }
+        $('.owner').on('click',function(){
+            let url = 'owners_datas';
+            let temp = '#ownertmpl';
+            let view = '#owner';
+            let page = 'test2';
+            let Fun = 'GET';
+            that.show_info(url,temp,view,page,Fun);
+        });
+        $('.driver').on('click',function(){
+            let url = 'driver_datas';
+            let temp = '#drivertmpl';
+            let view = '#driver';
+            let page = 'test1';
+            let Fun = 'GET'
+            that.show_info(url,temp,view,page,Fun);
+        });
+        $('.order').on('click',function(){
+            let date = new Date();
+            let formate = util.dateFormat('yyyy-MM-dd',date);
+            setTimeout(function(){
+                $('.time').html(formate);
+            },200);
+            let url = 'orders_datas?date=' + formate;
+            let temp = '#ordertmpl';
+            let view = '#order';
+            let page = 'test4';
+            let Fun = 'GET';
+            that.show_info(url,temp,view,page,Fun);
+        });
+        $('.lost_driver').on('click',function(){
+            let token = share.token;
+            let url = 'lose_promise'
+            function success(r){
+                let list = JSON.parse(r);
+                console.log(list);
+            }
+            util.GET(url,success,token);
+        });
+        $('.history').on('click',function(){
+            let date = new Date();
+            let months = date.getMonth() + 1;
+            console.log(months);
+            let month = '';
+            if (month > 9){
+                month = months;
+            }else if(month < 10){
+                month = '0' + months;
+                console.log(month);
+            }
+            let year = date.getFullYear();
+            let time = year + '-' + month;
+            setTimeout(function(){
+                $('.month').html(time);
+            },200);
+            let url = 'records?year=' + year + '&month=' + months;
+            let token = share.token;
+            function success(e){
+                let list = JSON.parse(e);
+                let obj = {};
+                list.forEach(function(ok){
+                    let key = (ok.split('] ')[0]).split('[')[1];
+                    let value = ok.split('] ')[1];
+                    let time = (new Date(key).getMonth() + 1) + '月' + (new Date(key).getDate()) + '日';
+                    let item = {};
+                    item.time = key.split(' ')[1];
+                    item.value = value;
+                    if(!(time in obj)){
+                        obj[time] = [];
+                    }
+                    obj[time].push(item);
+                });
+                let arr = {};
+                arr.list = obj;
+                console.log(arr);
+                layui.use('laytpl', function(){
+                    var laytpl = layui.laytpl;
+                    var getTpl = demo.innerHTML
+                    ,view = document.getElementById('his_item');
+                    laytpl(getTpl).render(arr, function(html){
+                        view.innerHTML = html;
+                    });
+                });
+            }
+            util.GET(url,success,token);
+        });
+        $('.car').on('click',function(){
+            let token = share.token;
+            let url = 'trucks_datas?page=1&count=11';
+            let temp = '#cartmpl';
+            let view = '#car';
+            let page = 'test3';
+            let Fun = 'GET';
+            function success(res){
+                let e = JSON.parse(res);
+                console.log(e);
+                let data = {};
+                let count = e.carCount;
+                data.data = e.data;
+                var myTemplate = Handlebars.compile($(temp).html());
+                $(view).html(myTemplate(data));
+                layui.use('laypage', function(){
+                    var laypage = layui.laypage;
+                    laypage.render({
+                        elem: page, //注意，这里的 test1 是 ID，不用加 # 号
+                        count: count, //数据总数，从服务端得到
+                        limit:11,
+                        jump: function(obj, first){
+                            if(!first){
+                                url = 'trucks_datas?page='+obj.curr+'&count=11';
+                                function fn(m){
+                                    let e =JSON.parse(m);
+                                    data.data = e.data;
+                                    console.log(data);
+                                    var Template = Handlebars.compile($(temp).html());
+                                    $(view).html(Template(data));
+                                }
+                                util.GET(url,fn,token);
+                            }
+                        }
+                    });
+                });
+            }
+                util.GET(url,success,token);
+        });
+        $('.release').on('click',function(){
+            setTimeout(function(){
+                $('.release_his').css('display','none');
+                $('.release').css('display','block');
+                layui.use('layedit', function(){
+                    var layedit = layui.layedit;
+                    layedit.set({
+                        uploadImage: {
+                            url: 'http://47.104.218.70:16543/upload' //接口url
+                            ,type: 'post' //默认post
+                        }
+                    });
+                    layedit.build('rule_text',{
+                        tool: [
+                          'strong' //加粗
+                          ,'italic' //斜体
+                          ,'underline' //下划线
+                          ,'del' //删除线
+                          
+                          ,'|' //分割线
+                          
+                          ,'left' //左对齐
+                          ,'center' //居中对齐
+                          ,'right' //右对齐
+
+                          ,'|' //分割线
+
+                          ,'link' //超链接
+                          ,'unlink' //清除链接
+                          ,'image' //插入图片
+                        ],
+                        uploadImage: {
+                            url: 'http://47.104.218.70:16543/upload' //接口url
+                            ,type: 'post' //默认post
+                        }
+                    }); //建立编辑器
+                });
+            },100);
+        });
+        function del_info(e,fun){
+            layui.use('layer',function(){
+                layer.open({
+                    content: '确定删除该条信息'
+                    ,btn: ['确认', '取消']
+                    ,closeBtn: 1
+                    ,shade: [0.8, '#393D49']
+                    ,shadeClose: true
+                    ,anim:4
+                    ,yes: function(index, layero){
+                    eval('that.'+fun+'(e)');
+                    },
+                    btn2: function(index, layero){
+    
+                    }
+                });
+            });
+        }
+        function del_owner(e){
+            that.del_info(e,'to_del_owner');
+        }
+        function to_del_owner(e){
+            let id = $(e).data('id');
+            let token = share.token;
+            let url = 'owner_delete';
+            let name = $(e).parent(".owner_item").children('div:first-child').html();
+            let log = '车主' + name + '被删除';
+            let datas = {
+                log: log,
+                owner_id: id
+            };
+            let data = JSON.stringify(datas);
+            function success(e){
+                console.log(e);
+                if(e == 'fail'){
+                    layui.use('layer', function(){
+                        layer.msg('删除失败');
+                    }); 
+                }else if (e = 'success') {
+                    layui.use('layer', function(){
+                        layer.msg('删除成功');
+                    });  
+                }
+            }
+            util.POSTS(url,data,success,token);
+        }
+        function del_driver(e){
+            that.del_info(e,'to_del_driver');
+        }
+        function cTruck_service(e){
+            layui.use('layer',function(){
+                layer.open({
+                    content: '确定修改该条信息'
+                    ,btn: ['确认', '取消']
+                    ,closeBtn: 1
+                    ,shade: [0.8, '#393D49']
+                    ,shadeClose: true
+                    ,anim:4
+                    ,yes: function(index, layero){
+                        let id = $(e).data('id');
+                        let token = share.token;
+                        let url = 'release_trucks';
+                        let name = $(e).parent('car_item').children('div:first-child').html();
+                        let log = '车辆[' + name + ']状态被修改';
+                        let datas = {
+                            log: log,
+                            truck_id: id
+                        };
+                        let data = JSON.stringify(datas);
+                        function success(e){
+                            if(e = 'fail'){
+                                layer.msg('修改失败');
+                            }else if (e = 'success'){
+                                layui.use('layui',function(){
+                                    layer.msg('修改成功');
+                                });
+                            }
+                        }
+                        util.POSTS(url,data,success,token);
+                    },
+                    btn2: function(index, layero){
+    
+                    }
+                });
+            });
+        }
+        function to_del_driver(e){
+            let id = $(e).data('id') + '';
+            let token = share.token;
+            let url = 'driver_delete';
+            let name = $(e).parent(".driver_item").children('div:first-child').html();
+            let log = '司机' + name + '被删除';
+            let datas = {
+                log: log,
+                driver_id: id
+            };
+            let data = JSON.stringify(datas);
+            function success(e){
+                if(e == 'fail'){
+                    layui.use('layer', function(){
+                        layer.msg('删除失败');
+                    }); 
+                }else if (e = 'success') {
+                    layui.use('layer', function(){
+                        layer.msg('删除成功');
+                    });  
+                }
+            }
+            util.POSTS(url,data,success,token);
+        }
+        function change_prohibit(e){
+            let id = $(e).index('.change_prohibit');
+            let html = $(e).html();
+            $(e).prop('id','input'+id);
+            let elem = '#input' + id;
+            layui.use('laydate', function(){
+                var laydate = layui.laydate;
+                laydate.render({
+                    elem: elem,
+                    btns: [],
+                    done:function(value){
+                        let token = share.token;
+                        let truck = $(e).parent(".car_item").children('div:first-child').html();
+                        let log = "车辆[" + truck + "]被停用,停用到" + value;
+                        let url = 'prohibit_truck';
+                        let truck_id = $(e).data('id');
+                        let values = value + ' 00:00:00';
+                        let datas = {
+                            log: log,
+                            truck_id: truck_id,
+                            date: values
+                        }
+                        let data = JSON.stringify(datas);
+                        function success(e){
+                            if(e == 'fail'){
+                                layui.use('layer', function(){
+                                    layer.msg('修改失败');
+                                });
+                                $(e).html(html); 
+                            }else if (e = 'success') {
+                                layui.use('layer', function(){
+                                    layer.msg('修改成功');
+                                });  
+                            }
+                        }
+                        util.POSTS(url,data,success,token);
+                    }
+                });
+            });
+        }
+    </script>
+  </body>
+</html>

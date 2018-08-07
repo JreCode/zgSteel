@@ -1,0 +1,94 @@
+<style type="text/css">
+	.nav{
+		height: 60px;
+		width: 100%;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	.month{
+		height: 40px;
+		width: 140px;
+		border-radius: 4px;
+		box-shadow: 0 0 6px rgba(0,0,0,0.2);
+		margin-top: 15px;
+		margin-left: 20px;
+		text-align: center;
+		color: #888;
+		line-height: 40px;
+		font-size: 20px;
+		cursor:pointer;
+	}
+	#history{
+		padding-left: 40px;
+		overflow: hidden;;
+		width: 100%;
+	}
+</style>
+<div style="margin: 0;padding: 0;position: relative;">
+	<div class="nav">
+		<div class="month"></div>
+	</div>
+	<div id="history">
+		<ul class="layui-timeline" id="his_item" style="margin-top: 40px;margin-left: 30px;height: 650px;overflow-y: scroll;">
+  
+		</ul>  
+	</div>
+</div>
+<script id="demo" type="text/html">
+	{{# layui.each(d.list, function(index, item){ }}
+	<li class="layui-timeline-item">
+		<i class="layui-icon layui-timeline-axis"></i>
+		<div class="layui-timeline-content layui-text">
+				<h3 class="layui-timeline-title">{{index}}</h3>
+				{{# layui.each(d.list[index], function(index, item){ }}
+				<p style="display: inline-block;width: 500px;margin-top: 10px;">{{item.value}}<p style="margin-left: 20px;display: inline-block;">{{item.time}}</p></p>
+				{{# }); }}
+		</div>
+  	</li>
+  	{{# }); }}
+</script>
+<script type="text/javascript">
+	$('.month').on('click',function(){
+	    layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '.month',
+                type: 'month',
+                btns: ['confirm'],
+                done:function(value,date){
+                    let token = share.token;
+                    let year = date.year;
+                    let month = date.month;
+                    let url = 'records?year=' + year + '&month=' + month;
+                    function success(e){
+                    	let list = JSON.parse(e);
+                    	let obj = {};
+                    	list.forEach(function(ok){
+                    		let key = (ok.split('] ')[0]).split('[')[1];
+                    		let value = ok.split('] ')[1];
+                    		let time = (new Date(key).getMonth() + 1) + '月' + (new Date(key).getDate()) + '日';
+                    		let item = {};
+                    		item.time = key.split(' ')[1];
+                    		item.value = value;
+                    		if(!(time in obj)){
+                    			obj[time] = [];
+                    		}
+                    		obj[time].push(item);
+                    	});
+                    	let arr = {};
+                    	arr.list = obj;
+                    	console.log(arr);
+                    	layui.use('laytpl', function(){
+  							var laytpl = layui.laytpl;
+                    		var getTpl = demo.innerHTML
+							,view = document.getElementById('his_item');
+							laytpl(getTpl).render(arr, function(html){
+  								view.innerHTML = html;
+							});
+						});
+                    }
+                    util.GET(url,success,token);
+                }
+            });
+        });
+	});
+</script>

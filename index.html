@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>抢单管理后台</title>
+    <style type="text/css">
+      body{
+        font-size: 22px;
+        font-family: "Microsoft YaHei Arial",Aria,STHeiti,"PingFang SC" ;
+        overflow: hidden;
+        padding: 0;
+        margin:0;
+      }
+      .login{
+        font-size: 30px;
+        color:#535353;
+        line-height: 60px;
+        margin-top: 40px;
+        text-align: center;
+      }
+      .yuan{
+        width:300px;
+        height:300px;
+        background:linear-gradient(#035fce, #03ccc3);
+        position: absolute;
+        top:-140px;
+        border-radius: 50%;
+        margin-left: -20px;
+      }
+      .logo{
+        z-index: 100;
+        position: relative;
+        top:20px;
+        height:70px;
+        width:70px;
+        background: #fff;
+        border-radius: 4px;
+        left:50%;
+        margin-left: -35px;
+        margin-top: 20px;
+      }
+      .input{
+        position: relative;
+        width:220px;
+        left:20px;
+        margin-top: 80px;
+      }
+      .login{
+        width: 100px;
+        height:40px;
+        background: #4567f0;
+        border:1px solid #4567e0;
+        border-radius: 4px;
+        line-height: 40px;
+        text-align: center;
+        position: relative;
+        margin-top: 20px;
+        left:80px;
+        font-size: 16px;
+        color: #fff;
+        outline:none;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <img src="./source/close.png" style="position: absolute;width:20px;height: 20px;z-index: 101;right:6px;top:6px" id="close"/>
+    </div>
+    <div class="yuan"></div>
+    <!-- <div class="pswhint"></div> -->
+    <div class="logo">
+        <img src='./source/中钢.png' style="width:60px;height:60px;margin-top: 5px;margin-left: 5px;" /> 
+    </div>
+    <div class="input">
+      <input type="text" placeholder="用户名:" class="username" style="width:220px;height:30px;border:none;border-bottom: 2px solid #5678f0;outline:none">
+      <input placeholder="密码:" class="password" type="password" style="width:220px;height: 30px;border:none;border-bottom: 2px solid #5678f0;margin-top: 20px;outline:none">
+    </div>
+    <div>
+      <button style="cursor: pointer;" class="login" id="login">登陆</button>
+    </div>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
+    <script>
+        let util = require('./renderer.js')
+        var ipc = require('electron').ipcRenderer;
+        let share = require('electron').remote.getGlobal('sharedObject');
+        $('#close').on('click',function(){
+            ipc.send('window-close');
+        });
+        $('#login').on('click',function(){
+            // ipc.send('new-window');
+            let username = $('.username').val();
+            let password = $('.password').val();
+            let user = util.MD5(username,'zygt');
+            let pwd = util.MD5(password,'zygt');
+            let url = 'login';
+            let time = new Date().getTime();
+            let data = {
+                username:user,
+                password:pwd,
+                time:time
+            };
+            function success(e,q){
+                if (e == 'success'){
+                    share.token = q;
+                    ipc.send('new-window');
+                }
+                // if(e.code == 1){
+                //     ipc.send('new-window');
+                // }else{
+                //     // todo 登陆失败提示 忘记密码
+                // }
+            };
+            util.POST(url,data,success);
+        });
+    </script>
+  </body>
+</html>

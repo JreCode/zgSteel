@@ -1,0 +1,46 @@
+<style type="text/css">
+	.nav{
+		height: 60px;
+		width: 100%;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	.time{
+		height: 40px;
+		width: 140px;
+		border-radius: 4px;
+		box-shadow: 0 0 6px rgba(0,0,0,0.2);
+		margin-top: 15px;
+		margin-left: 20px;
+		text-align: center;
+		color: #888;
+		line-height: 40px;
+		font-size: 20px;
+		cursor:pointer;
+	}
+</style>
+<div style="margin: 0;padding: 0;position: relative;padding-left: 40px;overflow: hidden;">
+	<div class="nav">
+		<div class="time"></div>
+	</div>
+	<div id = "order" style="height: 470px;overflow-y: scroll;"></div>
+	<div id = 'test4' style="display: inline-block;position: relative;left:50%;margin-top: 20px;transform: translate(-50%,0);"></div>
+</div>
+<script type="text/javascript">
+	$('.time').on('click',function(){
+	    layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '.time',
+                btns: [],
+                done:function(value){
+                    let url = 'orders_datas?date=' + value;
+                    let temp = '#ordertmpl';
+                    let view = '#order';
+                    let page = 'test4';
+                    let Fun = 'GET';
+                    that.show_info(url,temp,view,page,Fun);
+                }
+            });
+        });
+	});
+</script>

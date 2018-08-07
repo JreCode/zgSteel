@@ -1,0 +1,162 @@
+<style type="text/css">
+	.nav{
+		height: 60px;
+		width: 100%;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	.nav_rule{
+		position: relative;
+		height: 30px;
+		width: 250px;
+		line-height: 30px;
+		border-radius: 30px;
+		box-shadow: 0 0 6px rgba(89,120,244,0.6) inset;
+		border:1px solid #6789ff;
+		top: 15px;
+		margin-left: 100px;
+		display:inline-block;
+		cursor: pointer;
+	}
+	.nav_rule div{
+		flex:1;
+		text-align: center;
+		line-height: 30px;
+		display: inline-block;
+		width: 31.3%;
+	}
+	.search{
+		height:32px;
+		width:200px;
+		background: rgb(234,234,234);
+		border-radius: 4px;
+		margin-left: 50px;
+		display: inline-block;
+		margin-top: 8px;
+    	vertical-align: bottom;
+	}
+	.search_icon{
+        background-image:url('../source/search.png');
+        display: inline-block;
+        background-repeat: no-repeat;
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+        cursor: pointer;
+	}
+	.search_input{
+		border:none;
+		height: 26px;
+		margin-top: 2px;
+		line-height: 26px;
+		font-size: 14px;
+		padding-left: 10px;
+		width:150px;
+		background: rgb(234,234,234);
+		outline:none;
+	}
+	.owner_title{
+		height: 60px;
+		font-size: 20px;
+		color:rgb(137,161,178);
+		line-height: 60px;
+		width: 80%;
+		margin-left: 10%;
+		box-shadow: 0 0 10px rgba(0,0,0,0.1);
+		margin-top: 40px;
+		text-align: center;
+		display: flex
+	}
+	.owner_title div{
+		display: inline-block;
+		flex:1;
+	}
+	.kx{
+		height: 16px;
+		width: 16px;
+		border-radius: 16px;
+		background: #2add77;
+		vertical-align: sub;
+	}
+	.ys{
+		height: 16px;
+		width: 16px;
+		border-radius: 16px;
+		background: #ff5b5c;
+		vertical-align: sub;
+	}
+	.status{
+		position: relative;
+		display: inline-block;
+		height: 30px;
+		margin-top: 15px;
+		vertical-align: bottom;
+		line-height: 30px;
+	}
+	.status div{
+		display: inline-block;
+	}
+</style>
+<div style="margin: 0;padding: 0;position: relative;">
+	<div class="nav">
+		<ul class="layui-nav" style="background:#fff;display: inline-block;height:36px;margin-top:12px;vertical-align: top;padding:0;margin-left: 10%;border:1px solid #4589f0;border-radius: 0;position: relative;">
+		  	<li class="layui-nav-item" style="line-height: 36px;padding-right: 20px">
+		    	<a href="javascript:;" style="font-size: 16px;color:#4589f0;font-weight: bold">承运商
+				<span class="layui-nav-more" style="border-top-color:none;margin-right:20px;border-color:#4589f0 transparent transparent"></span>
+		    	</a>
+		    	<dl class="layui-nav-child layui-anim layui-anim-upbit" style="top:36px;width: 100%"> <!-- 二级菜单 -->
+		      		<dd><a href="">全部</a></dd>
+		      		<dd><a href="">注册车辆</a></dd>
+		      		<dd><a href="">白福昌</a></dd>
+		      		<dd><a href="">薛林生</a></dd>
+		      		<dd><a href="">赵练生</a></dd>
+		    	</dl>
+		  	</li>
+		  	<!-- <span class="layui-nav-bar" style="width:100%;top:30px;opacity: 1;background: #4589f0"></span> -->
+		</ul>
+		<div class="search">
+			<input type="text" placeholder="司机搜索" name="" class="search_input" autocomplete="on"/>
+			<div class="search_icon"></div>
+		</div>
+		<div style="padding-left: 40px;overflow: hidden;">
+			<div class="owner_title" >
+				<div >姓名</div>
+				<div style="flex:2">身份证</div>
+				<div >承运商</div>
+				<div >操作</div>
+			</div>
+			<div id="owner" style="margin-top: 20px;height: 400px;overflow-y:scroll;"></div>
+		</div>
+		<div id = 'test2' style="display: inline-block;position: relative;left:50%;margin-top: 20px;transform: translate(-50%,0);"></div>
+	</div>
+</div>
+<script type="text/javascript">
+    let share = require('electron').remote.getGlobal('sharedObject');
+    var util = require('../renderer.js');
+	$('.nav_rule div').on('click',function(){
+		$('.nav_rule div').css('color','#535353');
+		$(this).css('color','#6789ff');
+	});
+	$('.layui-nav').mouseenter(function(){
+		if(!($('.layui-nav-child').hasClass('layui-show'))){
+			$('.layui-nav-child').addClass('layui-show');
+		}
+		if(!($('.ayui-nav-more').hasClass('layui-nav-mored'))){
+			$('.layui-nav-more').addClass('layui-nav-mored');
+			$('.layui-nav-more').css('border-color','transparent transparent #4589f0');
+		}
+	}).mouseleave(function(){
+		$('.layui-nav-child').removeClass('layui-show');
+		$('.layui-nav-more').removeClass('layui-nav-mored');
+		$('.layui-nav-more').css('border-color','#4589f0 transparent transparent');
+	});
+	$('.search_icon').on('click',function(){
+        $('#test2').css('display','none'); 
+        let url = 'owner_info_by_name';
+        let temp = '#ownertmpl';
+        let view = '#owner';
+        let page = 'test2';
+        let Fun = 'POSTS';
+		let text = $('.search_input').val();
+        that.show_info(url,temp,view,page,Fun,text);
+    });
+</script>
